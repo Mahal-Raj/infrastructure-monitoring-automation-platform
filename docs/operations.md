@@ -37,6 +37,8 @@ east,East Linux Node,http://127.0.0.1:9100,AGENT_TOKEN_EAST
 | `LOG_UNITS` | empty | Allowlist for journal retrieval |
 | `ALLOW_MUTATIONS` | `false` | Enables explicitly requested restarts |
 
+The systemd installer creates a dedicated `infra-agent` account. Enabling a real restart also requires reviewing and installing a narrow rule based on `deploy/infra-agent.sudoers.example`; the installer deliberately does not grant restart privileges by itself.
+
 ## Incident workflow
 
 1. Check `/api/v1/health` to confirm the controller is running.

@@ -1,0 +1,9 @@
+.git
+.github
+build
+out
+__pycache__
+*.pyc
+.env
+.idea
+.vscode

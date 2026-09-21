@@ -1,0 +1,24 @@
+[Unit]
+Description=Infrastructure Monitoring Python Agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=infra-agent
+Group=infra-agent
+EnvironmentFile=/etc/infra-agent/agent.env
+ExecStart=/usr/bin/python3 /opt/infrastructure-monitoring-agent/infra_agent.py
+Restart=on-failure
+RestartSec=5
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target

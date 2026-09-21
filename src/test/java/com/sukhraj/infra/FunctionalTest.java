@@ -58,6 +58,7 @@ public final class FunctionalTest {
             response(baseUrl, "GET", "/api/v1/nodes/east/logs?unit=nginx&lines=20", null, null, 401, "invalid operator token");
             response(baseUrl, "GET", "/api/v1/nodes/east/logs?unit=nginx&lines=20", "operator-secret", null, 200, "service ready");
             response(baseUrl, "POST", "/api/v1/nodes/east/actions", "wrong", "{\"action\":\"disk_usage\"}", 401, "invalid operator token");
+            response(baseUrl, "POST", "/api/v1/nodes/east/actions", "operator-secret", null, 400, "request body must contain");
             response(baseUrl, "POST", "/api/v1/nodes/east/actions", "operator-secret", "{\"action\":\"disk_usage\"}", 200, "\"executed\":true");
 
             response(baseUrl, "GET", "/api/v1/reports/operations", null, null, 200, "infrastructure-operations");

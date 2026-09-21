@@ -79,6 +79,7 @@ class AgentUnitTests(unittest.TestCase):
         self.assertTrue(result["dryRun"])
         self.assertFalse(result["executed"])
         self.assertEqual([], runner.commands)
+        self.assertEqual(["sudo", "-n", "systemctl", "restart", "nginx"], result["result"]["command"])
 
 
 class AgentHttpTests(unittest.TestCase):

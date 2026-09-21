@@ -17,7 +17,7 @@ The Python agent does not expose a shell endpoint. Administrative requests map t
 2. an allowlisted target;
 3. `ALLOW_MUTATIONS=true` plus `dryRun:false`.
 
-The default is a dry-run response describing the approved command without running it.
+The default is a dry-run response describing the approved command without running it. Real restarts use `sudo -n` and therefore also require a narrowly scoped sudoers rule such as [the reviewed example](../deploy/infra-agent.sudoers.example). The installer does not grant that permission automatically.
 
 ## Log safety
 
@@ -31,6 +31,6 @@ The default is a dry-run response describing the approved command without runnin
 
 - Bind agents to a private interface or loopback and place cross-host traffic behind TLS/mTLS.
 - Store tokens in a secret manager or orchestrator secret, not `.env` committed to Git.
-- Run the agent under a dedicated account. Grant narrowly scoped `sudoers` permissions only for explicitly required services.
+- Run the agent under a dedicated account. Grant narrowly scoped `sudoers` permissions only for explicitly required services; keep `ALLOW_MUTATIONS=false` until that rule has been reviewed.
 - Send action audit events to durable centralized storage.
 - Replace the in-memory metrics window with a persistent time-series backend for production retention.

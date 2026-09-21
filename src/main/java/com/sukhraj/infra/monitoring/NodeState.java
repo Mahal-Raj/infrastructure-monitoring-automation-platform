@@ -18,7 +18,8 @@ final class NodeState {
     private boolean online;
     private int consecutiveFailures;
     private String latestMetrics;
-    private long latestLatencyMs;
+    private long latestAttemptLatencyMs;
+    private long latestSuccessLatencyMs;
     private String latestError;
 
     NodeState(NodeDefinition node, int windowSize) {
@@ -33,7 +34,7 @@ final class NodeState {
     synchronized void record(AgentResponse response) {
         lastAttempt = Instant.now();
         online = response.success();
-        latestLatencyMs = response.latencyMs();
+        latestAttemptLatencyMs = response.latencyMs();
         latestError = response.error();
         samples.addLast(response.success());
         while (samples.size() > windowSize) {
@@ -42,6 +43,7 @@ final class NodeState {
         if (response.success()) {
             latestMetrics = response.body();
             lastSuccess = lastAttempt;
+            latestSuccessLatencyMs = response.latencyMs();
             consecutiveFailures = 0;
         } else {
             consecutiveFailures++;
@@ -56,7 +58,7 @@ final class NodeState {
                 "online", Json.bool(online),
                 "lastAttemptAt", Json.nullable(lastAttempt == null ? null : lastAttempt.toString()),
                 "lastSuccessAt", Json.nullable(lastSuccess == null ? null : lastSuccess.toString()),
-                "latestLatencyMs", Json.number(latestLatencyMs),
+                "latestLatencyMs", Json.number(latestAttemptLatencyMs),
                 "consecutiveFailures", Json.number(consecutiveFailures),
                 "availabilityPercent", Json.decimal(availabilityPercent()),
                 "samples", Json.number(samples.size()),
@@ -88,7 +90,7 @@ final class NodeState {
         return Json.object(
                 "nodeId", Json.string(node.id()),
                 "lastSuccessAt", Json.string(lastSuccess.toString()),
-                "latencyMs", Json.number(latestLatencyMs),
+                "latencyMs", Json.number(latestSuccessLatencyMs),
                 "metrics", Json.rawObjectOrString(latestMetrics));
     }
 

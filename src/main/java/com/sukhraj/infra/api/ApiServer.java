@@ -49,6 +49,8 @@ public final class ApiServer implements AutoCloseable {
         int status = 500;
         try {
             status = route(exchange);
+        } catch (BadRequestException exception) {
+            status = sendError(exchange, 400, exception.getMessage());
         } catch (IllegalArgumentException exception) {
             status = sendError(exchange, 404, exception.getMessage());
         } catch (Exception exception) {
@@ -193,15 +195,15 @@ public final class ApiServer implements AutoCloseable {
             try {
                 long length = Long.parseLong(rawLength);
                 if (length <= 0 || length > MAX_BODY_BYTES) {
-                    throw new IllegalArgumentException("request body must contain 1.." + MAX_BODY_BYTES + " bytes");
+                    throw new BadRequestException("request body must contain 1.." + MAX_BODY_BYTES + " bytes");
                 }
             } catch (NumberFormatException exception) {
-                throw new IllegalArgumentException("invalid Content-Length", exception);
+                throw new BadRequestException("invalid Content-Length", exception);
             }
         }
         byte[] content = exchange.getRequestBody().readNBytes(MAX_BODY_BYTES + 1);
         if (content.length == 0 || content.length > MAX_BODY_BYTES) {
-            throw new IllegalArgumentException("request body must contain 1.." + MAX_BODY_BYTES + " bytes");
+            throw new BadRequestException("request body must contain 1.." + MAX_BODY_BYTES + " bytes");
         }
         return new String(content, StandardCharsets.UTF_8);
     }
@@ -273,6 +275,16 @@ public final class ApiServer implements AutoCloseable {
     private static final class UncheckedExchangeException extends RuntimeException {
         private UncheckedExchangeException(IOException cause) {
             super(cause);
+        }
+    }
+
+    private static final class BadRequestException extends RuntimeException {
+        private BadRequestException(String message) {
+            super(message);
+        }
+
+        private BadRequestException(String message, Throwable cause) {
+            super(message, cause);
         }
     }
 }

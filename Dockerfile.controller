@@ -1,0 +1,15 @@
+FROM eclipse-temurin:17-jdk-jammy AS build
+WORKDIR /workspace
+COPY src/main/java ./src/main/java
+RUN mkdir -p build/classes \
+    && find src/main/java -type f -name '*.java' -print0 | sort -z | xargs -0 javac --release 17 --add-modules jdk.httpserver -d build/classes \
+    && jar --create --file build/controller.jar --main-class com.sukhraj.infra.PlatformApplication -C build/classes .
+
+FROM eclipse-temurin:17-jre-jammy
+WORKDIR /app
+COPY --from=build /workspace/build/controller.jar ./controller.jar
+COPY config ./config
+USER 10001
+EXPOSE 8080
+HEALTHCHECK --interval=10s --timeout=3s --retries=5 CMD ["java", "-cp", "/app/controller.jar", "com.sukhraj.infra.HealthProbe"]
+ENTRYPOINT ["java", "--add-modules", "jdk.httpserver", "-jar", "/app/controller.jar"]

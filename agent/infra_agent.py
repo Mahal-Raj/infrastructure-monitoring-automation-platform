@@ -368,7 +368,7 @@ class AdminExecutor:
             result = self.runner.run(("systemctl", "status", target, "--no-pager"))
             response = self._response(action, target, False, True, result.as_dict())
         elif action == "restart_service":
-            command = ("systemctl", "restart", target)
+            command = ("sudo", "-n", "systemctl", "restart", target)
             if dry_run or not self.settings.allow_mutations:
                 reason = "request is a dry run" if dry_run else "mutating actions are disabled on this agent"
                 response = self._response(

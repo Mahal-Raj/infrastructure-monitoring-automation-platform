@@ -1,0 +1,59 @@
+services:
+  agent-east:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+    environment:
+      AGENT_BIND: 0.0.0.0
+      AGENT_PORT: 9100
+      NODE_ID: east
+      AGENT_TOKEN: demo-east-agent-token
+      MANAGED_SERVICES: nginx
+      LOG_UNITS: nginx
+      ALLOW_MUTATIONS: "false"
+    ports:
+      - "9101:9100"
+    networks: [operations]
+
+  agent-west:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+    environment:
+      AGENT_BIND: 0.0.0.0
+      AGENT_PORT: 9100
+      NODE_ID: west
+      AGENT_TOKEN: demo-west-agent-token
+      MANAGED_SERVICES: nginx
+      LOG_UNITS: nginx
+      ALLOW_MUTATIONS: "false"
+    ports:
+      - "9102:9100"
+    networks: [operations]
+
+  controller:
+    build:
+      context: .
+      dockerfile: Dockerfile.controller
+    depends_on:
+      agent-east:
+        condition: service_healthy
+      agent-west:
+        condition: service_healthy
+    environment:
+      PLATFORM_BIND: 0.0.0.0
+      PLATFORM_PORT: 8080
+      NODE_CONFIG: config/nodes.docker.csv
+      POLL_INTERVAL_SECONDS: 10
+      REQUEST_TIMEOUT_SECONDS: 5
+      AVAILABILITY_WINDOW: 120
+      OPERATOR_TOKEN: demo-operator-token
+      AGENT_TOKEN_EAST: demo-east-agent-token
+      AGENT_TOKEN_WEST: demo-west-agent-token
+    ports:
+      - "8080:8080"
+    networks: [operations]
+
+networks:
+  operations:
+    driver: bridge
