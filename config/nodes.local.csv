@@ -1,0 +1,2 @@
+id,name,baseUrl,tokenEnv
+local,Local Linux Agent,http://127.0.0.1:9100,AGENT_TOKEN_LOCAL

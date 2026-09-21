@@ -1,0 +1,12 @@
+build/
+out/
+.env
+*.log
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db

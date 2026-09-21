@@ -1,0 +1,3 @@
+id,name,baseUrl,tokenEnv
+east,East Linux Node,http://agent-east:9100,AGENT_TOKEN_EAST
+west,West Linux Node,http://agent-west:9100,AGENT_TOKEN_WEST
